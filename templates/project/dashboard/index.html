@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>CelestialUI Admin</title>
+    
+    <!-- leaflet css  -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+      body {
+          margin: 0;
+          padding: 0;
+      }
+
+      #map {
+          width: 100%;
+          height: 100vh;
+      }
+  </style>
+
+    <!-- base:css -->
+    <link rel="stylesheet" href="../static/dashboard/vendors/typicons.font/font/typicons.css">
+    <link rel="stylesheet" href="../static/dashboard/vendors/css/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="../static/dashboard/css/vertical-layout-light/style.css">
+    <!-- endinject -->
+    <link rel="shortcut icon" href="../static/dashboard/images/favicon.png" />
+  </head>
+  <body>
+
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+          <a class="navbar-brand brand-logo" href="../static/dashboard/index.html"><img src="../static/dashboard/images/logo.svg" alt="logo"/></a>
+          <a class="navbar-brand brand-logo-mini" href="index.html"><img src="../static/dashboard/images/logo-mini.svg" alt="logo"/></a>
+          <button class="navbar-toggler navbar-toggler align-self-center d-none d-lg-flex" type="button" data-toggle="minimize">
+            <span class="typcn typcn-th-menu"></span>
+          </button>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+          <ul class="navbar-nav mr-lg-2">
+            <li class="nav-item  d-none d-lg-flex">
+              <a class="nav-link" href="../static/dashboard/#">
+                Calendar
+              </a>
+            </li>
+            <li class="nav-item  d-none d-lg-flex">
+              <a class="nav-link active" href="../static/dashboard/#">
+                Statistic
+              </a>
+            </li>
+            <li class="nav-item  d-none d-lg-flex">
+              <a class="nav-link" href="../static/dashboard/#">
+                Employee
+              </a>
+            </li>
+          </ul>
+          <ul class="navbar-nav navbar-nav-right">
+
+            <li class="nav-item dropdown d-flex">
+
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
+                <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <img src="../static/dashboard/images/faces/face4.jpg" alt="image" class="profile-pic">
+                  </div>
+
+                  <a class="nav-link dropdown-toggle  pl-0 pr-0" href="../static/dashboard/#" data-toggle="dropdown" id="profileDropdown">
+                    <i class="typcn typcn-user-outline mr-0"></i>
+
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+                    <a class="dropdown-item">
+                      <i class="typcn typcn-cog text-primary"></i>
+                      Settings
+                    </a>
+                    <a class="dropdown-item">
+                      <i class="typcn typcn-power text-primary"></i>
+                      Logout
+                    </a>
+                  </div>
+          </ul>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+            <span class="typcn typcn-th-menu"></span>
+          </button>
+        </div>
+      </nav>
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_settings-panel.html -->
+
+        <!-- partial -->
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item">
+            <div class="d-flex sidebar-profile">
+              <div class="sidebar-profile-image">
+                <img src="../static/dashboard/images/faces/face29.png" alt="image">
+                <span class="sidebar-status-indicator"></span>
+              </div>
+              <div class="sidebar-profile-name">
+                <p class="sidebar-name">
+                  {{name}}
+                </p>
+                <p class="sidebar-designation">
+                  {{email}}
+                </p>
+              </div>
+            </div>
+
+            <p class="sidebar-menu-title">Dash menu</p>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../static/dashboard/index.html">
+              <i class="typcn typcn-device-desktop menu-icon"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="../static/dashboard/#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+              <i class="typcn typcn-briefcase menu-icon"></i>
+              <span class="menu-title">Details</span>
+              <i class="typcn typcn-chevron-right menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-basic">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="../static/dashboard/pages/ui-features/buttons.html">Buttons</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../static/dashboard/pages/ui-features/dropdowns.html">Dropdowns</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../static/dashboard/pages/ui-features/typography.html">Typography</a></li>
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="../static/dashboard/#form-elements" aria-expanded="false" aria-controls="form-elements">
+              <i class="typcn typcn-film menu-icon"></i>
+              <span class="menu-title">Settings</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="form-elements">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"><a class="nav-link" href="../static/dashboard/pages/forms/basic_elements.html">Basic Elements</a></li>
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="window.location.href='{% url 'logout' %}';" data-toggle="collapse"  aria-expanded="false" aria-controls="charts">
+              <i class="typcn typcn-chart-pie-outline menu-icon"></i>
+              <span class="menu-title" >Logout</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="charts">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="pages/charts/chartjs.html">ChartJs</a></li>
+              </ul>
+            </div>
+          </li>
+
+        </ul>
+        <ul class="sidebar-legend">
+          <li>
+
+          </li>
+
+        </ul>
+      </nav>
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-sm-6">
+
+              </div>
+              <div class="col-sm-6">
+                <div class="d-flex align-items-center justify-content-md-end">
+                  <div class="mb-3 mb-xl-0 pr-1">
+                      <div class="dropdown">
+
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuSizeButton3" data-x-placement="top-start">
+
+                        </div>
+                      </div>
+                  </div>
+                  <div class="pr-1 mb-3 mr-2 mb-xl-0">
+                  </div>
+                  <div class="pr-1 mb-3 mb-xl-0">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="row">
+              <div class="col-lg-4 d-flex grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-between">
+                      <h4 class="card-title mb-3">Nearby {{ number }} Parking Spots !</h4>
+                    </div>
+                    <div id="my-div"></div>
+                    
+                    {% for key,value in parking_spot_name.items %}
+                    <div class="mt-2">
+                      <a class="nav-link"  data-toggle="collapse"  aria-expanded="false" aria-controls="ui-basic">
+                        <i class="typcn typcn-briefcase menu-icon"></i>
+                          <span class="menu-title">{{value}}</span>
+                        <button onclick="Routing({{key}})">go!</button>
+                        <i class="typcn typcn-chevron-right menu-arrow"></i>
+                      </a>
+                    </div>
+                    {% endfor %}
+                    <canvas id="salesTopChart"></canvas>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-8 d-flex grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-between">
+                      <h4 class="card-title mb-3">Map</h4>
+                    </div>
+                    <div id="map"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12 d-flex grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-between">
+                      <h4 class="card-title mb-3">Parking Area</h4>
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-9">
+                        
+                          <div id="parking_map"style="height: 100vh; width:100vh"></div>
+                        
+                      </div>
+                      <div class="col-lg-3">
+                        <div>
+                          <div class="d-flex justify-content-between mb-3">
+                            <div class="text-success font-weight-bold">Inbound</div>
+                          </div>
+                          <div class="d-flex justify-content-between mb-3">
+                            <div class="font-weight-medium">Current</div>
+                            <div class="text-muted">38.34M</div>
+                          </div>
+                          <div class="d-flex justify-content-between mb-3">
+                            <div class="font-weight-medium">Average</div>
+                            <div class="text-muted">38.34M</div>
+                          </div>
+                          <div class="d-flex justify-content-between mb-3">
+                            <div class="font-weight-medium">Maximum</div>
+                            <div class="text-muted">68.14M</div>
+                          </div>
+                          <div class="d-flex justify-content-between mb-3">
+                            <div class="font-weight-medium">60th %</div>
+                            <div class="text-muted">168.3GB</div>
+                          </div>
+                        </div>
+                        <hr>
+                        <div class="mt-4">
+                          <div class="d-flex justify-content-between mb-3">
+                            <div class="text-success font-weight-bold">Outbound</div>
+                          </div>
+                          <div class="d-flex justify-content-between mb-3">
+                            <div class="font-weight-medium">Current</div>
+                            <div class="text-muted">458.77M</div>
+                          </div>
+                          <div class="d-flex justify-content-between mb-3">
+                            <div class="font-weight-medium">Average</div>
+                            <div class="text-muted">1.45K</div>
+                          </div>
+                          <div class="d-flex justify-content-between mb-3">
+                            <div class="font-weight-medium">Maximum</div>
+                            <div class="text-muted">15.50K</div>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <div class="font-weight-medium">60th %</div>
+                            <div class="text-muted">45.5</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+            
+          </footer>
+          <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- base:js -->
+    <script src="vendors/js/vendor.bundle.base.js"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page-->
+    <!-- End plugin js for this page-->
+    <!-- inject:js -->
+    <script src="../static/dashboard/js/off-canvas.js"></script>
+    <script src="../static/dashboard/js/hoverable-collapse.js"></script>
+    <script src="../static/dashboard/js/template.js"></script>
+    <script src="../static/dashboard/js/settings.js"></script>
+    <script src="../static/dashboard/js/todolist.js"></script>
+    <!-- endinject -->
+    <!-- plugin js for this page -->
+    <script src="../static/dashboard/vendors/progressbar.js/progressbar.min.js"></script>
+    <script src="../static/dashboard/vendors/chart.js/Chart.min.js"></script>
+    <!-- End plugin js for this page -->
+    <!-- Custom js for this page-->
+    <script src="../static/dashboard/js/dashboard.js"></script>
+    <!-- End custom js for this page-->
+  </body>
+</html>
+
+<!-- leaflet js  -->
+<script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+<!-- leaflet css  -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+
+
+<script>
+
+    function initialixe(map_no=1){// Map initialization 
+    if(map_no ==1){
+      var myIcon = L.icon({
+	iconUrl: '../static/dashboard/parking.png',
+	iconSize: [38, 50],
+});
+     map = L.map('map').setView([14.0860746, 100.608406],11);
+     park_map = L.map('parking_map').setView([14.0860746, 100.608406],11);
+
+     
+     
+     
+
+    navigator.geolocation.getCurrentPosition(getPosition)
+
+
+     mylat = {{lat}};
+     mylon = {{lon}};
+    console.log(mylat.length)
+for(var i = 0; i < mylat.length; i++){
+    console.log(mylat[i])
+    console.log(mylon[i])
+
+    var parking_spot = new L.marker([mylat[i], mylon[i]],{icon:myIcon}).addTo(map)
+    
+
+};
+
+    //osm layer
+    osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+    osm.addTo(map);
+    osm_park = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        ,maxNativeZoom: 19,maxZoom: 25,
+    });
+    osm_park.addTo(park_map);
+    
+
+    if(!navigator.geolocation) {
+        console.log("Your browser doesn't support geolocation feature!")
+    } else {
+      setInterval(() => {
+            navigator.geolocation.getCurrentPosition(getPosition_nozoom)
+            
+            
+        }, 5000);
+        
+    }
+    };
+    };
+
+    initialixe(map_no=1);
+
+    var polygon1 = {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+            [76.372324,30.352518],[76.372324,30.352518],[76.372473,30.35303],[76.372473,30.35303],[76.372635,30.353034],[76.372635,30.353034],[76.372716,30.3524],[76.372716,30.3524],[76.372324,30.352518],[76.372324,30.352518]              
+              
+              
+            ]
+          ]
+        }
+      }
+    ]
+  }
+
+  var spot1 = {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+            [76.372426,30.352489],[76.372426,30.352489],[76.372436,30.352518],[76.372453,30.352515],[76.372453,30.352515],[76.372441,30.352484],[76.372441,30.352484],[76.372426,30.352489],[76.372426,30.352489]              
+              
+            ]
+          ]
+        }
+      }
+    ]
+  }
+
+  var spot2 = {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+            [76.372448,30.352482],[76.372448,30.352482],[76.372458,30.352513],[76.372458,30.352513],[76.372475,30.352509],[76.372475,30.352509],[76.372464,30.352477],[76.372464,30.352477],[76.372448,30.352482],[76.372448,30.352482]              
+            ]
+          ]
+        }
+      }
+    ]
+  }
+
+		geomet = L.geoJson(polygon1,{tolerance: 0.000005});
+
+    spot1_onmap = L.geoJson(spot1,{
+    style: {
+        color: 'black',
+        fillColor: 'red',
+        fillOpacity: 0.5
+    }
+});
+
+spot2_onmap = L.geoJson(spot2,{
+    style: {
+        color: 'black',
+        fillColor: 'green',
+        fillOpacity: 0.5
+    }
+});
+		
+	
+
+    
+
+    function Routing(i=-1){
+                            console.log(i,lat,long);
+                            
+                            var x=L.Routing.control({waypoints: [L.latLng(lat, long),L.latLng(mylat[i], mylon[i]) ]});
+                            var y =L.Routing.control({waypoints: [L.latLng(lat, long),L.latLng(mylat[i], mylon[i]) ]});
+                            var z =L.Routing.control({waypoints: [L.latLng(lat, long),L.latLng(mylat[i], mylon[i]) ]});
+
+                  if(i==0) {map.remove();park_map.remove();initialixe(map_no=1);x.addTo(map);park_map.flyTo([mylat[i], mylon[i]], 20);};
+                  if(i==1) {map.remove();park_map.remove();initialixe(map_no=1);y.addTo(map);park_map.flyTo([mylat[i], mylon[i]], 20);geomet.addTo(park_map);spot1_onmap.addTo(park_map);spot2_onmap.addTo(park_map)};
+                  if(i==2) {map.remove();park_map.remove();initialixe(map_no=1);z.addTo(map);park_map.flyTo([mylat[i], mylon[i]], 20);};
+
+
+                };
+    var marker, circle;
+    function getPosition(position){
+        // console.log(position)
+        var lat = position.coords.latitude
+        var long = position.coords.longitude
+        var accuracy = position.coords.accuracy
+      
+
+        if(marker) {
+            map.removeLayer(marker)
+        }
+
+        if(circle) {
+            map.removeLayer(circle)
+        }
+
+        marker = L.marker([lat, long])
+        
+        circle = L.circle([lat, long], {radius: accuracy})
+
+        var featureGroup = L.featureGroup([marker, circle]).addTo(map)
+
+        map.fitBounds(featureGroup.getBounds())
+        
+
+        //console.log("Your coordinate is: Lat: "+ lat +" Long: "+ long+ " Accuracy: "+ accuracy)
+    }
+
+    
+    function getPosition_nozoom(position,i=-1){
+        // console.log(position)
+        console.log("no_zoom_called! wiith i=",i,position.coords.latitude,position.coords.longitude);
+
+        
+
+        lat = position.coords.latitude;
+        long = position.coords.longitude;
+        var accuracy = position.coords.accuracy
+
+        if(marker) {
+            map.removeLayer(marker)
+        }
+
+        if(circle) {
+            map.removeLayer(circle)
+        }
+
+        marker = L.marker([lat, long])
+        
+        circle = L.circle([lat, long], {radius: accuracy})
+
+        var featureGroup = L.featureGroup([marker, circle]).addTo(map)
+
+        
+                
+        
+ 
+        
+
+        //console.log("Your coordinate is: Lat: "+ lat +" Long: "+ long+ " Accuracy: "+ accuracy)
+    }
+
+    
+
+    
+
+
+
+</script>
