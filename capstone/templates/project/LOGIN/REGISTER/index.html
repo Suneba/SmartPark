@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>REGISTER</title>
+  <link rel="stylesheet" href="../static/LOGIN/REGISTER/style.css">
+
+</head>
+<body>
+  
+<!-- partial:index.partial.html -->
+<div id="bg"></div>
+
+<form action="/postsignup/" method="post">
+  {% csrf_token %}
+  <div class="form-field">
+    <input type="text" name="name" placeholder="UserName" required/>
+  </div>
+  <div class="form-field">
+    <input type="email" name="email" placeholder="Email" required/>
+  </div>
+
+  <div class="form-field">
+    <input type="password" name="pass" placeholder="Password" required/>                         </div>
+  
+  <div class="form-field">
+    <button class="btn_reg" type="button" onclick="history.back()">Login?</button>
+    <button class="btn"  type="submit">Register</button>
+  </div>
+</form>
+<!-- partial -->
+  
+</body>
+</html>

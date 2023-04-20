@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>CelestialUI Admin</title>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.css'><link rel="stylesheet" href="../static/dashboard/details_style.css">
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script><script  src="../static/dashboard/details_script.js"></script>
+
+
+
+    <!-- leaflet css  -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+      body {
+          margin: 0;
+          padding: 0;
+      }
+
+      #map {
+          width: 100%;
+          height: 100vh;
+      }
+  </style>
+
+    <!-- base:css -->
+    <link rel="stylesheet" href="../static/dashboard/vendors/typicons.font/font/typicons.css">
+    <link rel="stylesheet" href="../static/dashboard/vendors/css/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="../static/dashboard/css/vertical-layout-light/style.css">
+    <!-- endinject -->
+    <link rel="shortcut icon" href="../static/dashboard/images/favicon.png" />
+  </head>
+  <body>
+
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+          <a class="navbar-brand brand-logo" href="../static/dashboard/index.html"><img src="../static/dashboard/images/logo.svg" alt="logo"/></a>
+          <a class="navbar-brand brand-logo-mini" href="index.html"><img src="../static/dashboard/images/logo-mini.svg" alt="logo"/></a>
+          <button class="navbar-toggler navbar-toggler align-self-center d-none d-lg-flex" type="button" data-toggle="minimize">
+            <span class="typcn typcn-th-menu"></span>
+          </button>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+          <ul class="navbar-nav mr-lg-2">
+            <li class="nav-item  d-none d-lg-flex">
+              <a class="nav-link" href="../static/dashboard/#">
+                Calendar
+              </a>
+            </li>
+            <li class="nav-item  d-none d-lg-flex">
+              <a class="nav-link active" href="../static/dashboard/#">
+                Statistic
+              </a>
+            </li>
+            <li class="nav-item  d-none d-lg-flex">
+              <a class="nav-link" href="../static/dashboard/#">
+                Employee
+              </a>
+            </li>
+          </ul>
+          <ul class="navbar-nav navbar-nav-right">
+
+            <li class="nav-item dropdown d-flex">
+
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
+                <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <img src="../static/dashboard/images/faces/face4.jpg" alt="image" class="profile-pic">
+                  </div>
+
+                  <a class="nav-link dropdown-toggle  pl-0 pr-0" href="../static/dashboard/#" data-toggle="dropdown" id="profileDropdown">
+                    <i class="typcn typcn-user-outline mr-0"></i>
+
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+                    <a class="dropdown-item">
+                      <i class="typcn typcn-cog text-primary"></i>
+                      Settings
+                    </a>
+                    <a class="dropdown-item">
+                      <i class="typcn typcn-power text-primary"></i>
+                      Logout
+                    </a>
+                  </div>
+          </ul>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+            <span class="typcn typcn-th-menu"></span>
+          </button>
+        </div>
+      </nav>
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_settings-panel.html -->
+
+        <!-- partial -->
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item">
+            <div class="d-flex sidebar-profile">
+              <div class="sidebar-profile-image">
+                <img src="../static/dashboard/images/faces/face29.png" alt="image">
+                <span class="sidebar-status-indicator"></span>
+              </div>
+              <div class="sidebar-profile-name">
+                <p class="sidebar-name">
+                  {{name}}
+                </p>
+                <p class="sidebar-designation">
+                  {{email}}
+                </p>
+              </div>
+            </div>
+
+            <p class="sidebar-menu-title">Dash menu</p>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="history.back()">
+              <i class="typcn typcn-device-desktop menu-icon"></i>
+              <span class="menu-title">Home</span>
+            </a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" data-toggle="collapse" href="../static/dashboard/" aria-expanded="false" aria-controls="ui-basic">
+              <i class="typcn typcn-briefcase menu-icon"></i>
+              <span class="menu-title">Details</span>
+              <i class="typcn typcn-chevron-right menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-basic">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="../static/dashboard/pages/ui-features/buttons.html">Buttons</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../static/dashboard/pages/ui-features/dropdowns.html">Dropdowns</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../static/dashboard/pages/ui-features/typography.html">Typography</a></li>
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="../static/dashboard/#form-elements" aria-expanded="false" aria-controls="form-elements">
+              <i class="typcn typcn-film menu-icon"></i>
+              <span class="menu-title">Settings</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="form-elements">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"><a class="nav-link" href="../static/dashboard/pages/forms/basic_elements.html">Basic Elements</a></li>
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="window.location.href='{% url 'logout' %}';" data-toggle="collapse"  aria-expanded="false" aria-controls="charts">
+              <i class="typcn typcn-chart-pie-outline menu-icon"></i>
+              <span class="menu-title" >Logout</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="charts">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="pages/charts/chartjs.html">ChartJs</a></li>
+              </ul>
+            </div>
+          </li>
+
+        </ul>
+        <ul class="sidebar-legend">
+          <li>
+
+          </li>
+
+        </ul>
+      </nav>
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-sm-6">
+
+              </div>
+              <div class="col-sm-6">
+                <div class="d-flex align-items-center justify-content-md-end">
+                  <div class="mb-3 mb-xl-0 pr-1">
+                      <div class="dropdown">
+
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuSizeButton3" data-x-placement="top-start">
+
+                        </div>
+                      </div>
+                  </div>
+                  <div class="pr-1 mb-3 mr-2 mb-xl-0">
+                  </div>
+                  <div class="pr-1 mb-3 mb-xl-0">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="row">
+              <div class="col-lg-4 d-flex grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="container">
+  <form class="is-readonly">
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
+    <script>
+
+
+var firebaseConfig = {
+  "apiKey": "AIzaSyCIX86nT42i_1M82ELBNZXsxSH1tr213BU",
+  "authDomain": "django-49754.firebaseapp.com",
+  "projectId": "django-49754",
+"storageBucket":"django-49754.appspot.com",
+  "messagingSenderId": "231352706078",
+  "appId": "1:231352706078:web:a919c86476d3abbf44ba0f",
+  "databaseURL":"https://django-49754-default-rtdb.asia-southeast1.firebasedatabase.app/"
+}
+firebase.initializeApp(firebaseConfig);
+var database = firebase.database();
+
+name = database.ref("users/"+"{{id}}"+"/details/name").on("value", function (snapshot) {
+  data = snapshot.val();
+  console.log("omfg:::::",data);
+  document.getElementById('exampleInputPassword1').value = data.toString();
+});;
+
+email = database.ref("users/"+"{{id}}"+"/details/email").on("value", function (snapshot) {
+  data = snapshot.val();
+  console.log("omfg:::::",data);
+  document.getElementById('exampleInputEmail1').value = data.toString();
+});;
+
+
+
+
+console.log("hello");
+
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script>
+    $(document).ready(function() {
+      // Gravatar
+      var email = 'example@email.com'; // Replace with user's email
+      var hash = CryptoJS.MD5(email).toString();;
+      var gravatarUrl = 'https://www.gravatar.com/avatar/' + hash + '?s=80&d=identicon';
+      $('#profile-pic').attr('src', gravatarUrl);
+
+      // Form
+      $('.js-edit').on('click', function() {
+        $('input').prop('disabled', false);
+        $('.js-edit').hide();
+        $('.js-save').show();
+      });
+
+      $('.js-save').on('click', function() {
+        $('input').prop('disabled', true);
+        $('.js-edit').show();
+        $('.js-save').hide();
+      });
+    });
+  </script>
+  <style>
+    #profile-pic {
+    border: 5px solid black;
+    border-radius: 50%;
+  }
+  </style>
+  <form>
+
+    <div class="form-group">
+      
+      <img id="profile-pic" src="" alt="Profile Picture" />
+    </div>
+    
+
+    <div class="form-group">
+      <label for="exampleInputPassword1">Full Name</label>
+      <input type="text" class="form-control is-disabled" id="exampleInputPassword1" placeholder="Name" value= "$name" disabled>
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Email address</label>
+      <input type="email" class="form-control is-disabled" id="exampleInputEmail1" placeholder="Email" value= "email" disabled>
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Driver's license Number</label>
+      <input type="email" class="form-control is-disabled" id="exampleInputEmail2" placeholder="Email" value="4xxfx9" disabled>
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Phone Number</label>
+      <input type="email" class="form-control is-disabled" id="exampleInputEmail2" placeholder="mobile" value="+91XXXXXXX897" disabled>
+    </div>
+
+    <button type="button" class="btn btn-default btn-edit js-edit">Edit</button>
+    <button type="button" class="btn btn-default btn-save js-save">Save</button>
+  </form>
+
+</div>
+
+
+
+          <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- base:js -->
+    <script src="vendors/js/vendor.bundle.base.js"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page-->
+    <!-- End plugin js for this page-->
+    <!-- inject:js -->
+    <script src="../static/dashboard/js/off-canvas.js"></script>
+    <script src="../static/dashboard/js/hoverable-collapse.js"></script>
+    <script src="../static/dashboard/js/template.js"></script>
+    <script src="../static/dashboard/js/settings.js"></script>
+    <script src="../static/dashboard/js/todolist.js"></script>
+    <!-- endinject -->
+    <!-- plugin js for this page -->
+    <script src="../static/dashboard/vendors/progressbar.js/progressbar.min.js"></script>
+    <script src="../static/dashboard/vendors/chart.js/Chart.min.js"></script>
+    <!-- End plugin js for this page -->
+    <!-- Custom js for this page-->
+    <script src="../static/dashboard/js/dashboard.js"></script>
+    <!-- End custom js for this page-->
+  </body>
+</html>
+
+<!-- leaflet js  -->
+<script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+<!-- leaflet css  -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+
+
+
+
+

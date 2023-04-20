@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      body {
+        background-color: #f2f2f2;
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.6);
+        z-index: 9999;
+      }
+      .overlay-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        
+      }
+      .overlay-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        color: #fff;
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .overlay-form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0,0,0,0.6);
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+       
+      }
+      input[type="text"], input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: none;
+        border-bottom: 2px solid #ccc;
+        font-size: 16px;
+        color: #666;
+        background-color: #f2f2f2;
+      }
+      input[type="book"] {
+        background-color: #4CAF50;
+        color: #fff;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+    </style>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>CelestialUI Admin</title>
+
+    <!-- firebase css  -->
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
+
+<script>var firebaseConfig = {
+  "apiKey": "AIzaSyCIX86nT42i_1M82ELBNZXsxSH1tr213BU",
+  "authDomain": "django-49754.firebaseapp.com",
+  "projectId": "django-49754",
+"storageBucket":"django-49754.appspot.com",
+  "messagingSenderId": "231352706078",
+  "appId": "1:231352706078:web:a919c86476d3abbf44ba0f",
+  "databaseURL":"https://django-49754-default-rtdb.asia-southeast1.firebasedatabase.app/"
+}
+firebase.initializeApp(firebaseConfig);
+var database = firebase.database();
+
+
+
+
+
+</script>
+    
+    <!-- leaflet css  -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+      body {
+          margin: 0;
+          padding: 0;
+      }
+
+      #map {
+          width: 100%;
+          height: 100vh;
+          z-index: 1;
+      }
+  </style>
+  <style>
+		.card {
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			padding: 20px;
+			width: 500px;
+			margin: 20px auto;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+		}
+
+		.container {
+			display: grid;
+			grid-template-columns: repeat(6, 1fr);
+			grid-gap: 20px;
+			margin: 20px;
+			padding: 20px;
+			background-color: #eee;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+		}
+
+		label {
+			display: inline-block;
+			padding: 0;
+			width: 40px;
+			height: 40px;
+			background-color: #fff;
+			border: 1px solid #ccc;
+			border-radius: 0;
+			cursor: pointer;
+			text-align: center;
+			line-height: 30px;
+			
+    		border-color: green;
+		}
+
+		label.disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+			background-color: red;
+    		border-color: red;
+		}
+
+		button {
+			display: none;
+			margin-top: 10px;
+			padding: 10px;
+			background-color: #4CAF50;
+			color: #fff;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+	</style>
+
+    <!-- base:css -->
+    <link rel="stylesheet" href="../static/dashboard/vendors/typicons.font/font/typicons.css">
+    <link rel="stylesheet" href="../static/dashboard/vendors/css/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="../static/dashboard/css/vertical-layout-light/style.css">
+    <!-- endinject -->
+    <link rel="shortcut icon" href="../static/dashboard/images/favicon.png" />
+  </head>
+  <body>
+	<div id="login-overlay" class="overlay">
+		<div class="overlay-content">
+			<span class="overlay-close" onclick="closewindow()">&times;</span>
+			<form class="overlay-form">
+        {% csrf_token %}
+				<h2 id="form-heading">Confirm Details</h2>
+        <input id ="slot_num" type="text" placeholder="Slot number" value="slot_num" name="slot_num">
+				<input type="text" placeholder=" Car license Number" name = "lic_num">
+				<input type="text" placeholder=" Full Name" name = "full_name">
+				<input type="book" onclick="closeLogin()" value="Confirm Booking">
+        <button>hello</button>
+			</form>
+		</div>
+	</div>
+  <script>
+    function openLogin(slot_num_arg) {
+      document.getElementById("login-overlay").style.display = "block";
+      document.getElementById("form-heading").innerText = 'Confirm slot '+slot_num_arg.toString()
+      string_slot_num_arg = slot_num_arg.toString();
+      var lastTwoChars = string_slot_num_arg.substr(-2);
+      var trimmedString = lastTwoChars.trim();
+      var intValue = parseInt(trimmedString);
+      document.getElementById("slot_num").value = intValue
+
+    }
+
+    function closeLogin() {
+      document.getElementById("login-overlay").style.display = "none";
+      const slot_num =  document.getElementById("slot_num").value
+      var updates = {};
+      database.ref('parking_spots/parking_3/spot_num/spot_'+slot_num.toString()+'/booked').set(true);
+    }
+
+    function closewindow(){document.getElementById("login-overlay").style.display = "none";}
+  </script>
+
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_settings-panel.html -->
+
+        <!-- partial -->
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item">
+            <div class="d-flex sidebar-profile">
+              <div class="sidebar-profile-image">
+                <img src="../static/dashboard/images/faces/face29.png" alt="image">
+                <span class="sidebar-status-indicator"></span>
+              </div>
+              <div class="sidebar-profile-name">
+                <p class="sidebar-name">
+                  {{name}}
+                </p>
+                <p class="sidebar-designation">
+                  {{email}}
+                </p>
+              </div>
+            </div>
+
+            <p class="sidebar-menu-title">Dash menu</p>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" onclick="window.location.href='{% url 'dashboard' %}';">
+              <i class="typcn typcn-device-desktop menu-icon"></i>
+              <span class="menu-title">Home</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" onclick="window.location.href='{% url 'details' %}';" aria-expanded="false" aria-controls="ui-basic">
+              <i class="typcn typcn-briefcase menu-icon"></i>
+              <span class="menu-title" onclick="window.location.href='{% url 'details' %}';" >Details</span>
+              <i class="typcn typcn-chevron-right menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-basic">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="../static/dashboard/pages/ui-features/buttons.html">Buttons</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../static/dashboard/pages/ui-features/dropdowns.html">Dropdowns</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../static/dashboard/pages/ui-features/typography.html">Typography</a></li>
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" onclick="window.location.href='{% url 'details' %}';" aria-expanded="false" aria-controls="form-elements">
+              <i class="typcn typcn-film menu-icon"></i>
+              <span class="menu-title">Settings</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="form-elements">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"><a class="nav-link" href="../static/dashboard/pages/forms/basic_elements.html">Basic Elements</a></li>
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="window.location.href='{% url 'logout' %}';" data-toggle="collapse"  aria-expanded="false" aria-controls="charts">
+              <i class="typcn typcn-chart-pie-outline menu-icon"></i>
+              <span class="menu-title" >Logout</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="charts">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="pages/charts/chartjs.html">ChartJs</a></li>
+              </ul>
+            </div>
+          </li>
+
+        </ul>
+        <ul class="sidebar-legend">
+          <li>
+
+          </li>
+
+        </ul>
+      </nav>
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-sm-6">
+
+              </div>
+              <div class="col-sm-6">
+                <div class="d-flex align-items-center justify-content-md-end">
+                  <div class="mb-3 mb-xl-0 pr-1">
+                      <div class="dropdown">
+
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuSizeButton3" data-x-placement="top-start">
+
+                        </div>
+                      </div>
+                  </div>
+                  <div class="pr-1 mb-3 mr-2 mb-xl-0">
+                  </div>
+                  <div class="pr-1 mb-3 mb-xl-0">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="row">
+              <div class="col-lg-4 d-flex grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-between">
+                      <h4 class="card-title mb-3">Nearby {{ number }} Parking Spots !</h4>
+                    </div>
+                    <div id="my-div"></div>
+
+                    {% for key,value in parking_spot_name.items %}
+                    <div class="mt-2">
+                      <a class="nav-link"  data-toggle="collapse"  aria-expanded="false" aria-controls="ui-basic">
+                        <i class="typcn typcn-briefcase menu-icon"></i>
+                          <span class="menu-title">{{value}}</span>
+                        <button onclick="Routing({{key}})">go!</button>
+                        <a href="javascript:Routing({{key}});">Go Here!</a>
+                        <i class="typcn typcn-chevron-right menu-arrow"></i>
+                      </a>
+                    </div>
+                    {% endfor %}
+                    <canvas id="salesTopChart"></canvas>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-8 d-flex grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-between">
+                      <h4 class="card-title mb-3">Map</h4>
+                    </div>
+                    <div id="map"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" id = "after_park_select" style="display: none;">
+              <div class="col-lg-12 d-flex grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-between">
+                      <h4 class="card-title mb-3">Parking Area</h4>
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-9">
+
+                          <div id="parking_map"style="height: 40vh; width:80vh"></div>
+
+                          <div >
+                            <div class="col-lg-3">
+                              <div class="card" >
+                                <div class="container">
+                                  <label><input type="radio" name="option" id="1" value="Option 1">1</label>
+                                  <label><input type="radio" name="option" id="2" value="Option 2">2</label>
+                                  <label><input type="radio" name="option" id="3" value="Option 3">3</label>
+                                  <label><input type="radio" name="option" id="4" value="Option 4">4</label>
+                                  <label><input type="radio" name="option" id="5" value="Option 5">5</label>
+                                  <label><input type="radio" name="option" id="6" value="Option 6">6</label>
+                                  <label><input type="radio" name="option" id="7" value="Option 7">7</label>
+                                  <label><input type="radio" name="option" id="8" value="Option 8">8</label>
+                                  <label><input type="radio" name="option" id="9" value="Option 9">9</label>
+                                  <label><input type="radio" name="option" id="10" value="Option 10">10</label>
+                                  <label><input type="radio" name="option" id="11" value="Option 11">11</label>
+                                  <label><input type="radio" name="option" id="12" value="Option 12">12</label>
+                                </div>
+                              </div>
+                            
+                              <button id="book-btn"  ></button>
+                              
+                            
+                              <script>
+                                function loopValues() {
+                                    var loopCounter = 1; // Initialize a separate counter variable inside the function
+                                    var counterArray = []; // Initialize an array to store the loop numbers
+                                    var enable_button_arr=[];
+                                    for (var i = 1; i <= 12; i++) {
+                                      database.ref('/parking_spots/parking_3/spot_num/spot_'+i+"/booked").once('value').then(function(snapshot) {
+                                        var flag = snapshot.val();
+                                        if (flag) {
+                                          // If the flag is true, append the loop number (loopCounter) to the array
+                                          counterArray.push(loopCounter.toString());
+                                        }
+                                        else{enable_button_arr.push(loopCounter.toString());}
+                                        loopCounter++; // Increment the separate counter variable
+                                        if (loopCounter > 12) {
+                                          console.log('Counter array:', button_disabler(counterArray,enable_button_arr)); // Log the array when all callbacks have completed
+                                        }
+                                      });
+                                    }
+
+                                    //setTimeout(button_disabler(["1"]), 5000);
+                                    console.log(enable_button_arr)
+                                  }
+
+                                // Run the function every 10 seconds using setInterval()
+                                setInterval(loopValues, 10000);
+                                ////////////////////////////////////////////////////
+                                function button_disabler(array_of_disabled_buttons,enable_button_arr){
+                                        // IDs of the radio buttons that should be disabled
+                                      let disabledOptions = array_of_disabled_buttons;
+                                      console.log(disabledOptions);
+                                  
+                                        // Get all the radio buttons
+                                        const radioBtns = document.querySelectorAll('input[type="radio"]');
+                                    
+                                        // Disable the radio buttons in the disabledOptions array
+                                        disabledOptions.forEach((id) => {
+                                          const radioBtn = document.getElementById(id);
+                                          radioBtn.disabled = true;
+                                          radioBtn.parentElement.classList.add('disabled');
+                                        });
+
+                                        enable_button_arr.forEach((id) => {
+                                        const radioBtn = document.getElementById(id);
+                                        radioBtn.disabled = false;
+                                        radioBtn.parentElement.classList.remove('disabled');
+                                    });
+                                    
+                                        // Show the "Book" button when a radio button is clicked
+                                        radioBtns.forEach((btn) => {
+                                          btn.addEventListener('click', () => {
+                                            const bookBtn = document.getElementById('book-btn');
+                                            bookBtn.innerText = `Book ${btn.value}`;
+                                            bookBtn.style.display = 'block';
+                                            
+                                            
+                                            bookBtn.onclick = () => {
+                                              // Add your new onclick function here
+                                              console.log(`Button clicked with value: ${btn.value}`);
+                                              const functionName = `openLogin("${btn.value}")`;
+                                              eval(functionName);
+                                            };
+                                    });
+                                  });
+                                };
+                                //button_disabler();
+                              </script>
+                            </div>
+                          </div>
+
+                      </div>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+
+          </footer>
+          <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- base:js -->
+    <script src="vendors/js/vendor.bundle.base.js"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page-->
+    <!-- End plugin js for this page-->
+    <!-- inject:js -->
+    <script src="../static/dashboard/js/off-canvas.js"></script>
+    <script src="../static/dashboard/js/hoverable-collapse.js"></script>
+    <script src="../static/dashboard/js/template.js"></script>
+    <script src="../static/dashboard/js/settings.js"></script>
+    <script src="../static/dashboard/js/todolist.js"></script>
+    <!-- endinject -->
+    <!-- plugin js for this page -->
+    <script src="../static/dashboard/vendors/progressbar.js/progressbar.min.js"></script>
+    <script src="../static/dashboard/vendors/chart.js/Chart.min.js"></script>
+    <!-- End plugin js for this page -->
+    <!-- Custom js for this page-->
+    <script src="../static/dashboard/js/dashboard.js"></script>
+    <!-- End custom js for this page-->
+  </body>
+</html>
+
+<!-- leaflet js  -->
+<script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+<!-- leaflet css  -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+
+
+
+
+
+<script>
+
+    function initialixe(map_no=1){// Map initialization 
+    if(map_no ==1){
+      var myIcon = L.icon({
+	iconUrl: '../static/dashboard/parking.png',
+	iconSize: [38, 50],
+});
+     map = L.map('map').setView([14.0860746, 100.608406],11);
+     park_map = L.map('parking_map').setView([30.352482,76.372448],5);
+
+     
+     
+     
+
+    navigator.geolocation.getCurrentPosition(getPosition)
+
+
+     mylat = {{lat}};
+     mylon = {{lon}};
+    console.log(mylat.length)
+for(var i = 0; i < mylat.length; i++){
+    console.log(mylat[i])
+    console.log(mylon[i])
+
+    var parking_spot = new L.marker([mylat[i], mylon[i]],{icon:myIcon}).addTo(map)
+
+    
+    
+    
+
+};
+
+    //osm layer
+    osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+    osm.addTo(map);
+    osm_park = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        ,maxNativeZoom: 19,maxZoom: 25,
+    });
+    osm_park.addTo(park_map);
+    
+
+    if(!navigator.geolocation) {
+        console.log("Your browser doesn't support geolocation feature!")
+    } else {
+      setInterval(() => {
+            navigator.geolocation.getCurrentPosition(getPosition_nozoom)
+            
+            
+        }, 5000);
+        
+    };
+
+
+  };};
+
+    initialixe(map_no=1);
+
+    var polygon1 = {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+            [76.372324,30.352518],[76.372324,30.352518],[76.372473,30.35303],[76.372473,30.35303],[76.372635,30.353034],[76.372635,30.353034],[76.372716,30.3524],[76.372716,30.3524],[76.372324,30.352518],[76.372324,30.352518]              
+              
+              
+            ]
+          ]
+        }
+      }
+    ]
+  }
+  var polygon2 = {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+            [76.360301,30.353662],[76.360301,30.353662],[76.360342,30.353436],[76.360342,30.353436],[76.36059,30.353468],[76.36059,30.353468],[76.36055,30.353696],[76.36055,30.353696],[76.36055,30.353696],[76.360301,30.353663],[76.360301,30.353662]              
+              
+            ]
+          ]
+        }
+      }
+    ]
+  }
+  var polygon3 = {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+            [76.367657,30.357948],[76.367657,30.357948],[76.367685,30.357764],[76.367685,30.357764],[76.367944,30.357791],[76.367944,30.357791],[76.367961,30.357978],[76.367961,30.357978],[76.367656,30.357948],[76.367657,30.357948]              
+            ]
+          ]
+        }
+      }
+    ]
+  }
+  
+
+  //12 parking_spots
+  
+  var park_spot_1 = {
+  "type": "Feature",
+  "properties": {
+    "name": "Polygon 1"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+            [
+            [76.360362,30.353474],[76.360362,30.353474],[76.360368,30.353439],[76.360368,30.353439],[76.360394,30.353443],[76.360394,30.353443],[76.360388,30.353477],[76.360388,30.353477],[76.360362,30.353474]
+            ]
+          ]
+  }
+};
+var park_spot_2 = {
+  "type": "Feature",
+  "properties": {
+    "name": "Polygon 2"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+            [
+            [76.360396,30.353478],[76.360396,30.353478],[76.360403,30.353444],[76.360403,30.353444],[76.360427,30.353447],[76.360427,30.353447],[76.360421,30.353481],[76.360421,30.353481],[76.360396,30.353478]            ]
+          ]
+  }
+};
+var park_spot_3 = {
+  "type": "Feature",
+  "properties": {
+    "name": "Polygon 3"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+            [
+            [76.360429,30.353482],[76.360429,30.353482],[76.360435,30.353449],[76.360435,30.353449],[76.36046,30.353452],[76.36046,30.353452],[76.360454,30.353484],[76.360454,30.353484],[76.360429,30.353482]            ]
+          ]
+  }
+};
+var park_spot_4 = {
+  "type": "Feature",
+  "properties": {
+    "name": "Polygon 4"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+            [
+            [76.360464,30.353485],[76.360464,30.353485],[76.360472,30.353453],[76.360472,30.353453],[76.360497,30.353456],[76.360497,30.353456],[76.360488,30.353489],[76.360488,30.353489],[76.360464,30.353485]            ]
+          ]
+  }
+};
+var park_spot_5 = {
+  "type": "Feature",
+  "properties": {
+    "name": "Polygon 5"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+            [
+            [76.360498,30.353489],[76.360498,30.353489],[76.360506,30.353458],[76.360506,30.353458],[76.360529,30.353461],[76.360529,30.353461],[76.360521,30.353493],[76.360521,30.353493],[76.360498,30.353489]            ]
+          ]
+  }
+};
+var park_spot_6 = {
+  "type": "Feature",
+  "properties": {
+    "name": "Polygon 6"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+            [
+            [76.36053,30.353494],[76.36053,30.353494],[76.360537,30.353462],[76.360537,30.353462],[76.360562,30.353465],[76.360562,30.353465],[76.360553,30.353497],[76.360553,30.353497],[76.36053,30.353494]            ]
+          ]
+  }
+};
+var park_spot_7 = {
+  "type": "Feature",
+  "properties": {
+    "name": "Polygon 7"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+            [
+            [76.360309,30.353661],[76.360309,30.353661],[76.360318,30.353615],[76.360318,30.353615],[76.360348,30.35362],[76.360348,30.35362],[76.360335,30.353665],[76.360335,30.353665],[76.360309,30.353661]            ]
+          ]
+  }
+};
+var park_spot_8 = {
+  "type": "Feature",
+  "properties": {
+    "name": "Polygon 8"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+            [
+            [76.360347,30.353666],[76.360347,30.353666],[76.360357,30.353622],[76.360357,30.353622],[76.360386,30.353627],[76.360386,30.353627],[76.360374,30.353671],[76.360374,30.353671],[76.360347,30.353666]
+                      ]
+          ]
+  }
+};
+var park_spot_9 = {
+  "type": "Feature",
+  "properties": {
+    "name": "Polygon 9"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+            [
+            [76.360388,30.353673],[76.360388,30.353673],[76.360398,30.353631],[76.360398,30.353631],[76.360427,30.353636],[76.360427,30.353636],[76.360413,30.353677],[76.360413,30.353677],[76.360388,30.353673]            ]
+          ]
+  }
+};
+var park_spot_10 = {
+  "type": "Feature",
+  "properties": {
+    "name": "Polygon 10"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+            [
+            [76.360423,30.353677],[76.360423,30.353677],[76.360432,30.353638],[76.360432,30.353638],[76.360457,30.353642],[76.360457,30.353642],[76.360446,30.353681],[76.360446,30.353681],[76.360423,30.353677]
+                      ]
+          ]
+  }
+};
+var park_spot_11 = {
+  "type": "Feature",
+  "properties": {
+    "name": "Polygon 11"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+            [
+            [76.360462,30.353683],[76.360462,30.353683],[76.360472,30.353644],[76.360472,30.353644],[76.360499,30.353649],[76.360499,30.353649],[76.360488,30.353686],[76.360488,30.353686],[76.360462,30.353683]            ]
+          ]
+  }
+};
+var park_spot_12 = {
+  "type": "Feature",
+  "properties": {
+    "name": "Polygon 12"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+            [
+            [76.360501,30.35369],[76.360501,30.35369],[76.360529,30.353693],[76.360529,30.353693],[76.360536,30.353658],[76.360536,30.353658],[76.360508,30.353653],[76.360508,30.353653],[76.360501,30.35369]            ]
+          ]
+  }
+};
+
+var var_park_spot_1 = L.geoJson(park_spot_1);
+var var_park_spot_2 = L.geoJson(park_spot_2);
+var var_park_spot_3 = L.geoJson(park_spot_3);
+var var_park_spot_4 = L.geoJson(park_spot_4);
+var var_park_spot_5 = L.geoJson(park_spot_5);
+var var_park_spot_6 = L.geoJson(park_spot_6);
+var var_park_spot_7 = L.geoJson(park_spot_7);
+var var_park_spot_8 = L.geoJson(park_spot_8);
+var var_park_spot_9 = L.geoJson(park_spot_9);
+var var_park_spot_10 = L.geoJson(park_spot_10);
+var var_park_spot_11 = L.geoJson(park_spot_11);
+var var_park_spot_12 = L.geoJson(park_spot_12);
+
+function parking_tiet_fre_block_spot_set(){
+console.log("omgffffffffffffffffffffffffff");
+
+
+ var_park_spot_1.addTo(park_map);
+var_park_spot_2.addTo(park_map);
+var_park_spot_3.addTo(park_map);
+var_park_spot_4.addTo(park_map);
+var_park_spot_5.addTo(park_map);
+var_park_spot_6.addTo(park_map);
+ var_park_spot_7.addTo(park_map);
+var_park_spot_8.addTo(park_map);
+var_park_spot_9.addTo(park_map);
+ var_park_spot_10.addTo(park_map);
+var_park_spot_11.addTo(park_map);
+var_park_spot_12.addTo(park_map);
+
+
+
+
+};
+
+function remove_parking_spots(){ 
+
+  if(park_map.hasLayer(var_park_spot_1)){
+  var_park_spot_1.remove();
+var_park_spot_2.remove();
+var_park_spot_3.remove();
+var_park_spot_4.remove();
+var_park_spot_5.remove();
+var_park_spot_6.remove();
+ var_park_spot_7.remove();
+var_park_spot_8.remove();
+var_park_spot_9.remove();
+ var_park_spot_10.remove();
+var_park_spot_11.remove();
+var_park_spot_12.remove();};};
+
+function changeColor(layer, color) {
+  layer.setStyle({
+    color: color
+  });
+};
+
+
+
+  
+
+  
+
+ 
+		geomet = L.geoJson(polygon1,{tolerance: 0.000005});
+    geomet2 = L.geoJson(polygon2,{tolerance: 0.000005});
+    geomet3 = L.geoJson(polygon3,{tolerance: 0.000005});
+
+   // spot1_onmap = L.geoJson(spot1,{style: {color: 'black',fillColor: 'red',fillOpacity: 0.5,weight:1,}});
+
+
+
+//setInterval(() => {spot_color = database.ref("spot_color");spot_color.on("value", function (snapshot) {data = snapshot.val();console.log("omfg:::::",data);});;spot2_onmap = L.geoJson(spot2,{style: {color: 'black',fillColor: data.toString(),fillOpacity: 0.5,weight:1,}});}, 1000);
+		
+	
+
+    
+
+    function Routing(i=-1){
+
+      var x = document.getElementById("after_park_select");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  }
+
+                      //id = "after_park_select" style="display: none;"
+                            console.log(i,lat,long);
+                            
+                            var x=L.Routing.control({waypoints: [L.latLng(lat, long),L.latLng(mylat[i], mylon[i]) ]});
+                            var y =L.Routing.control({waypoints: [L.latLng(lat, long),L.latLng(mylat[i], mylon[i]) ]});
+                            var z =L.Routing.control({waypoints: [L.latLng(lat, long),L.latLng(mylat[i], mylon[i]) ]});
+
+                  if(i==0) {map.remove();park_map.remove();initialixe(map_no=1);x.addTo(map);setTimeout(function() { park_map.flyTo([mylat[i], mylon[i]], 20); }, 1000);;setInterval(() => {geomet3.addTo(park_map)}, 5000);};
+                  if(i==1) {map.remove();park_map.remove();initialixe(map_no=1);y.addTo(map);setTimeout(function() { park_map.flyTo([mylat[i], mylon[i]], 20); }, 1000);setInterval(() => {geomet.addTo(park_map);}, 5000);};
+                  if(i==2) {map.remove();park_map.remove();remove_parking_spots();initialixe(map_no=1);z.addTo(map);setTimeout(function() { park_map.flyTo([mylat[i], mylon[i]], 20); }, 1000);setTimeout(function() { parking_tiet_fre_block_spot_set();geomet2.addTo(park_map) }, 6000);;;};
+
+
+                };
+
+    var marker, circle;
+    function getPosition(position){
+        // console.log(position)
+        var lat = position.coords.latitude
+        var long = position.coords.longitude
+        var accuracy = position.coords.accuracy
+
+        
+      
+
+        if(marker) {
+            map.removeLayer(marker)
+        }
+
+        if(circle) {
+            map.removeLayer(circle)
+        }
+
+        marker = L.marker([lat, long])
+        
+        circle = L.circle([lat, long], {radius: accuracy})
+
+        var featureGroup = L.featureGroup([marker, circle]).addTo(map)
+
+        map.fitBounds(featureGroup.getBounds())
+        
+
+        //console.log("Your coordinate is: Lat: "+ lat +" Long: "+ long+ " Accuracy: "+ accuracy)
+    }
+
+    
+    function getPosition_nozoom(position,i=-1){
+        // console.log(position)
+        console.log("no_zoom_called! wiith i=",i,position.coords.latitude,position.coords.longitude);
+
+        
+
+        lat = position.coords.latitude;
+        long = position.coords.longitude;
+        var accuracy = position.coords.accuracy
+
+        if(marker) {
+            map.removeLayer(marker)
+        }
+
+        if(circle) {
+            map.removeLayer(circle)
+        }
+
+        marker = L.marker([lat, long])
+        
+        circle = L.circle([lat, long], {radius: accuracy})
+
+        var featureGroup = L.featureGroup([marker, circle]).addTo(map)
+
+        
+                
+        
+ 
+        
+
+        //console.log("Your coordinate is: Lat: "+ lat +" Long: "+ long+ " Accuracy: "+ accuracy)
+    }
+
+    
+
+    
+
+
+
+</script>
