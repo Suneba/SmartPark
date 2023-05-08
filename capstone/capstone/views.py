@@ -1,6 +1,9 @@
 from django.shortcuts import render
 import pyrebase
 from django.contrib import auth
+import razorpay
+from django.http import JsonResponse
+import json
 #
 config = {
   "apiKey": "AIzaSyCIX86nT42i_1M82ELBNZXsxSH1tr213BU",
@@ -34,6 +37,8 @@ def register(request):
 
 
 def postsign(request):
+
+
   email = str(request.POST.get('email'))
   passw = request.POST.get('pass')
 
@@ -44,6 +49,7 @@ def postsign(request):
     return render(request,"project/LOGIN/index.html",{"messg":message})
   # print(user['idToken'])
   session_id = str(user['localId'])
+  print("**************************////////////////",session_id)
   request.session['uid'] = session_id
   local, at, domain = email.rpartition('@')
 
@@ -64,6 +70,8 @@ def postsign(request):
     lon = (database.child(f"parking_spots/parking_{i+1}/details/lon").get().val())
     spot = str(database.child(f"spot_color").get().val())
 
+    credit = (database.child(f"users/{session_id}/details/credit").get().val())
+
 
     dict_for_pk_spots[i] = [name]
     print(parking_spot_names.append(name))
@@ -71,7 +79,10 @@ def postsign(request):
     print(longitude_list.append(lon))
   print(dict_for_pk_spots)
 
-  return render(request, "project/dashboard/index.html",{"name":local,"email":email,"parking_spot_name":dict_for_pk_spots,"lat":latitude_list,"lon":longitude_list,"number":count-1,"spot":spot,})
+
+
+
+  return render(request, "project/dashboard/index.html",{"credit":credit,"session_id":session_id,"name":local,"email":email,"parking_spot_name":dict_for_pk_spots,"lat":latitude_list,"lon":longitude_list,"number":count-1,"spot":spot,})
 
 
 
@@ -108,7 +119,30 @@ def book_slot(request):
   database.child(f"parking_spots/parking_3/spot_num/spot_{spot_num}/booked").set("true")
 
   return render(request, "project/dashboard/index.html")
-##hrllo
+
+
+def your_django_endpoint(request):
+    print("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
+    if request.method == "POST":
+        json_data = json.loads(request.body.decode('utf-8'))
+
+      # Access the 'amount' value from the JSON data
+        amount = int(json_data.get('amount'))
+        print(amount)
+
+        client = razorpay.Client(auth=("rzp_test_sG6dp9hQK41vti", "wzHZaza8eVIddzVa4micywqO"))
+
+        payment = client.order.create({"amount": f"{amount*100}", 'currency': 'INR', 'payment_capture': 1})
+        context = {'payment': payment}
+        
+
+        print("**********************paymant****", payment)
+        #database.child(f"order_id").set(payment['id'])
+        # Generate a unique order ID
+
+        response_data = {"order_id": payment['id']}
+        return JsonResponse(response_data)
+
 
 
 

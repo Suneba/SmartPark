@@ -71,6 +71,9 @@
 <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
 
+<!-- recaptcha css  -->
+<script src="https://www.google.com/recaptcha/api.js"></script>
+
 <script>var firebaseConfig = {
   "apiKey": "AIzaSyCIX86nT42i_1M82ELBNZXsxSH1tr213BU",
   "authDomain": "django-49754.firebaseapp.com",
@@ -82,6 +85,7 @@
 }
 firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
+
 
 
 
@@ -157,6 +161,16 @@ var database = firebase.database();
 			cursor: pointer;
 		}
 	</style>
+  <style>
+    #confirmation {
+      background-color: #c7e9c0;
+      border-radius: 5px;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+      max-width: 300px;
+      display: none;
+    }
+  </style>
 
     <!-- base:css -->
     <link rel="stylesheet" href="../static/dashboard/vendors/typicons.font/font/typicons.css">
@@ -169,6 +183,7 @@ var database = firebase.database();
     <!-- endinject -->
     <link rel="shortcut icon" href="../static/dashboard/images/favicon.png" />
   </head>
+ 
   <body>
 	<div id="login-overlay" class="overlay">
 		<div class="overlay-content">
@@ -176,34 +191,195 @@ var database = firebase.database();
 			<form class="overlay-form">
         {% csrf_token %}
 				<h2 id="form-heading">Confirm Details</h2>
-        <input id ="slot_num" type="text" placeholder="Slot number" value="slot_num" name="slot_num">
-				<input type="text" placeholder=" Car license Number" name = "lic_num">
-				<input type="text" placeholder=" Full Name" name = "full_name">
-				<input type="book" onclick="closeLogin()" value="Confirm Booking">
+        <p id ="Hours">Hours:</p>
+        <select id="numbers" name="numbers">
+          <script>
+            for (var i = 0; i <= 9; i++) {
+              document.write('<option value="' + i + '">' + i + '</option>');
+            }
+            document.getElementById("numbers").addEventListener("change", function() {
+     var selectedNumber = this.value;
+    
+    if(selectedNumber>0){var buttonElement = document.getElementById("rzp-button1"); buttonElement.style.display = "block";document.getElementById("result").innerHTML = "Amount: " + selectedNumber+" x (₹40/Hour) = "+"₹"+selectedNumber*40;}
+    if(selectedNumber==0){var buttonElement = document.getElementById("rzp-button1"); buttonElement.style.display = "none";document.getElementById("result").innerHTML = ""}
+  });
+          </script>
+          
+          {% csrf_token %}
+        </select>
+        <p id="result"> </p>
+        <input id ="Amount" type="text" placeholder="Amount"  name="Amount" style="display: none;">
+        <input id ="slot_num" type="text" placeholder="Slot number" value="slot_num" name="slot_num" disabled>
+				<input id = "lic_num" type="text" placeholder=" Car license Number" name = "lic_num">
+				<input id = "full_name" type="text" placeholder=" Full Name" name = "full_name">
+				<input id="rzp-button1" type="book" onclick="closeLogin()" value="Confirm Booking" style="display: none;">
+        <input id="recharge" type="button"   value="Recharge" style="display: none;">
+        
         <button>hello</button>
 			</form>
+      
 		</div>
+    
+    
 	</div>
   <script>
+    var order_id_rzp;
+    var amount ;
+    var options;
+    var rzp1
+    // Retrieve the CSRF token from the HTML
+    var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // Handle button click
+    document.getElementById("recharge").addEventListener("click", function() {
+      
+      amount = document.getElementById("Amount").value;
+      
+
+      // Make a POST request to the "/postsign/amountpost" URL
+      fetch("/your_django_endpoint", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken
+        },
+        body: JSON.stringify({ amount: amount })
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Display the order ID in the response container
+        console.log( "post_result________",data.order_id);
+        order_id_rzp = data.order_id
+        options = {
+    "key": "rzp_test_sG6dp9hQK41vti",
+    "amount": amount.toString(), // Placeholder amount
+    "currency": "INR",
+    "name": "park slot book",
+    "description": "Test Transaction",
+    "image": "https://example.com/your_logo",
+    "order_id": data.order_id,
+    "handler": function(response) {
+      // Handle the payment response
+      console.log(response);
+      database.ref('users/'+session_id.toString()+'/details/credit').once('value').then(function(snapshot) {
+                                        
+        database.ref('users/'+session_id.toString()+'/details/credit').set(parseInt(amount)+parseInt(snapshot.val()))
+                                      });
+                                      location.reload();
+    },
+    "theme": {
+      "color": "#3399cc"
+    }
+    
+  };rzp1 = new Razorpay(options);
+
+      })
+      .catch(error => {
+        console.error("Error:", error);
+      });
+
+      
+
+   
+  
+  var change_text = document.getElementById("recharge");
+  change_text.value = "Please Wait...";
+  //options.amount = (inputField.value * 100).toString(); // Update options.amount dynamically
+  setTimeout(function() {
+    console.log("initiating pay");
+		    initiate_pay(); // Set the new text after 5 seconds
+        document.getElementById("recharge").value = "Recharge";
+		  }, 5000);
+    
+    
+    
+    });
+
+function initiate_pay(){
+  console.log(order_id_rzp,amount);
+      //var rzp1 = new Razorpay(options);
+  rzp1.open();
+    //e.preventDefault();
+
+  rzp1.on('payment.failed', function(response) {
+    // Handle the failed payment response
+    console.log(response);
+    //document.getElementById("recharge").value ="recharge";
+    options= 0;
+    alert(response.error.code);
+        alert(response.error.description);
+        alert(response.error.source);
+        alert(response.error.step);
+        alert(response.error.reason);
+        alert(response.error.metadata.order_id);
+        alert(response.error.metadata.payment_id);
+  });
+  
+
+  //document.getElementById('recharge').onclick = function(e) {};
+};
+    //var order_id_database;database.ref('/order_id').on('value', function(snapshot) {order_id_database = snapshot.val();console.log("firebase_________",order_id_database);});
+
+
+
+
+  </script>
+  <script>
+    var credits = {{credit}};
     function openLogin(slot_num_arg) {
-      document.getElementById("login-overlay").style.display = "block";
+      if(slot_num_arg == 'recharge'){document.getElementById("rzp-button1").style.display = "none";document.getElementById("Hours").style.display = "none";document.getElementById("result").style.display = "none";document.getElementById("numbers").style.display = "none";document.getElementById("login-overlay").style.display = "block";document.getElementById("form-heading").innerText = 'Recharge ';document.getElementById("recharge").style.display= "block"; document.getElementById("Amount").style.display= "block"; document.getElementById("slot_num").style.display= "none";document.getElementById("lic_num").style.display= "none";document.getElementById("full_name").style.display= "none";}
+      else{
+        
+      if(credits>=500){document.getElementById("login-overlay").style.display = "block";
       document.getElementById("form-heading").innerText = 'Confirm slot '+slot_num_arg.toString()
+      
       string_slot_num_arg = slot_num_arg.toString();
       var lastTwoChars = string_slot_num_arg.substr(-2);
       var trimmedString = lastTwoChars.trim();
-      var intValue = parseInt(trimmedString);
-      document.getElementById("slot_num").value = intValue
+      intValue = parseInt(trimmedString);
+      document.getElementById("slot_num").value = intValue;}
+    else{alert("not enough credits please recharge")}
+    };
+      
 
     }
 
     function closeLogin() {
+      //transaction cut
+      var selectedNumberum = document.getElementById("numbers").value
+      
+      
+    //document.getElementById("result").innerHTML = "Amount: " + selectedNumber+"x (₹40/Hour) = "+"₹"+selectedNumber*40;
+        console.log("closelogin_________"+selectedNumberum);
+  
+  //
+
       document.getElementById("login-overlay").style.display = "none";
-      const slot_num =  document.getElementById("slot_num").value
+      const slot_num =  document.getElementById("slot_num").value;
+      var curr_num_plate = document.getElementById("lic_num").value;
+      var curr_num_plate_name =  document.getElementById("full_name").value;
+      database.ref('parking_spots/parking_3/spot_num/spot_'+slot_num.toString()+'/curr_num_plate/curr_num_plate').set(curr_num_plate.toString());
       var updates = {};
       database.ref('parking_spots/parking_3/spot_num/spot_'+slot_num.toString()+'/booked').set(true);
+      database.ref('parking_spots/parking_3/spot_num/spot_'+slot_num.toString()+'/book_by_user_id').set(session_id);
+      database.ref('parking_spots/parking_3/spot_num/spot_'+slot_num.toString()+'/curr_num_plate/name').set(curr_num_plate_name.toString());
+
+
     }
 
-    function closewindow(){document.getElementById("login-overlay").style.display = "none";}
+    function closewindow(){document.getElementById("login-overlay").style.display = "none"; document.getElementById("rzp-button1").style.display = "block";document.getElementById("Hours").style.display = "block";document.getElementById("numbers").style.display = "block";document.getElementById("login-overlay").style.display = "none";document.getElementById("form-heading").innerText = 'Confirm slot ';document.getElementById("recharge").style.display= "none"; document.getElementById("Amount").style.display= "none"; document.getElementById("slot_num").style.display= "block";document.getElementById("lic_num").style.display= "block";document.getElementById("full_name").style.display= "block";};
+
+    
+    function get_cash_details(){database.ref('users/'+session_id.toString()+'/details/credit').once('value').then(function(snapshot) {
+                                        
+                                        console.log("cash: "+snapshot.val());
+                                        
+                                        var paragraph = document.getElementById("cash");
+                                            paragraph.innerHTML = '₹ '+snapshot.val();
+                                            return parseInt(snapshot.val()) ;
+                                      });};
+              
+    
   </script>
 
     <div class="container-scroller">
@@ -230,6 +406,13 @@ var database = firebase.database();
                 <p class="sidebar-designation">
                   {{email}}
                 </p>
+               <a > 
+                 <p id = "cash" class="sidebar-name" onclick="openLogin('recharge')">
+                    
+                    </p>
+              </a>
+              
+
               </div>
             </div>
 
@@ -360,9 +543,12 @@ var database = firebase.database();
                       <div class="col-lg-9">
 
                           <div id="parking_map"style="height: 40vh; width:80vh"></div>
+                          <div id="confirmation" style="display: none;">
+                            <p id="confirmation_text">Your confirmed slot number is .</p>
+                          </div>
 
                           <div >
-                            <div class="col-lg-3">
+                            <div id ="col-lg-3" class="col-lg-3">
                               <div class="card" >
                                 <div class="container">
                                   <label><input type="radio" name="option" id="1" value="Option 1">1</label>
@@ -382,22 +568,34 @@ var database = firebase.database();
                             
                               <button id="book-btn"  ></button>
                               
-                            
+                              <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
                               <script>
+                                var session_id = "{{session_id}}";
+
                                 function loopValues() {
+                                  get_cash_details();
                                     var loopCounter = 1; // Initialize a separate counter variable inside the function
                                     var counterArray = []; // Initialize an array to store the loop numbers
                                     var enable_button_arr=[];
                                     for (var i = 1; i <= 12; i++) {
+                                      database.ref('parking_spots/parking_3/spot_num/spot_'+i+'/book_by_user_id').once('value').then(function(snapshot) {
+                                        slot_session_id = snapshot.val();
+                                        //console.log("great_america"+loopCounter,slot_session_id);
+                                      });
                                       database.ref('/parking_spots/parking_3/spot_num/spot_'+i+"/booked").once('value').then(function(snapshot) {
                                         var flag = snapshot.val();
-                                        if (flag) {
+                                       
+                                        if (flag && slot_session_id != null && slot_session_id == session_id ){console.log("value of i");console.log(loopCounter);change_color_of_booked_slot(loopCounter);document.getElementById("col-lg-3").style.display = "none";confirmationText = document.getElementById('confirmation_text');confirmationText.textContent = "Your confirmed slot number is "+ loopCounter;document.getElementById('confirmation').style.display = 'block';};
+                                        if (flag  && slot_session_id != session_id) {
                                           // If the flag is true, append the loop number (loopCounter) to the array
+                                          
+                                          
                                           counterArray.push(loopCounter.toString());
                                         }
                                         else{enable_button_arr.push(loopCounter.toString());}
                                         loopCounter++; // Increment the separate counter variable
                                         if (loopCounter > 12) {
+                                          
                                           console.log('Counter array:', button_disabler(counterArray,enable_button_arr)); // Log the array when all callbacks have completed
                                         }
                                       });
@@ -408,19 +606,26 @@ var database = firebase.database();
                                   }
 
                                 // Run the function every 10 seconds using setInterval()
+                               
                                 setInterval(loopValues, 10000);
+                               
+                                    
                                 ////////////////////////////////////////////////////
                                 function button_disabler(array_of_disabled_buttons,enable_button_arr){
                                         // IDs of the radio buttons that should be disabled
                                       let disabledOptions = array_of_disabled_buttons;
                                       console.log(disabledOptions);
+
+                                      
                                   
                                         // Get all the radio buttons
                                         const radioBtns = document.querySelectorAll('input[type="radio"]');
                                     
                                         // Disable the radio buttons in the disabledOptions array
                                         disabledOptions.forEach((id) => {
+                                          changeColor(eval("var_park_spot_"+array_of_slots[id]), '#FF0000');
                                           const radioBtn = document.getElementById(id);
+
                                           radioBtn.disabled = true;
                                           radioBtn.parentElement.classList.add('disabled');
                                         });
@@ -446,7 +651,7 @@ var database = firebase.database();
                                               eval(functionName);
                                             };
                                     });
-                                  });
+                                  });;
                                 };
                                 //button_disabler();
                               </script>
@@ -625,7 +830,7 @@ for(var i = 0; i < mylat.length; i++){
 
   //12 parking_spots
   
-  var park_spot_1 = {
+var park_spot_1 = {
   "type": "Feature",
   "properties": {
     "name": "Polygon 1"
@@ -785,6 +990,10 @@ var park_spot_12 = {
   }
 };
 
+//////////////////////////////////////////////////
+array_of_slots = [0,"7","8","9","10","11","12","1","2","3","4","5","6"];
+/////////////////////////////////////////////////
+
 var var_park_spot_1 = L.geoJson(park_spot_1);
 var var_park_spot_2 = L.geoJson(park_spot_2);
 var var_park_spot_3 = L.geoJson(park_spot_3);
@@ -823,7 +1032,7 @@ var_park_spot_12.addTo(park_map);
 function remove_parking_spots(){ 
 
   if(park_map.hasLayer(var_park_spot_1)){
-  var_park_spot_1.remove();
+var_park_spot_1.remove();
 var_park_spot_2.remove();
 var_park_spot_3.remove();
 var_park_spot_4.remove();
@@ -841,6 +1050,8 @@ function changeColor(layer, color) {
     color: color
   });
 };
+function change_color_of_booked_slot(int_Value){changeColor(eval("var_park_spot_"+array_of_slots[int_Value]), '#00ff00');};
+
 
 
 
@@ -850,7 +1061,10 @@ function changeColor(layer, color) {
 
  
 		geomet = L.geoJson(polygon1,{tolerance: 0.000005});
-    geomet2 = L.geoJson(polygon2,{tolerance: 0.000005});
+    geomet2 = L.geoJson(polygon2,{style: {
+    weight: 1, // Set the desired line thickness here
+    //color: "blue" // Set the desired line color here
+  }});
     geomet3 = L.geoJson(polygon3,{tolerance: 0.000005});
 
    // spot1_onmap = L.geoJson(spot1,{style: {color: 'black',fillColor: 'red',fillOpacity: 0.5,weight:1,}});
@@ -864,6 +1078,7 @@ function changeColor(layer, color) {
     
 
     function Routing(i=-1){
+      loopValues();
 
       var x = document.getElementById("after_park_select");
   if (x.style.display === "none") {
@@ -955,3 +1170,13 @@ function changeColor(layer, color) {
 
 
 </script>
+
+<script>
+
+  
+  //options.amount = "700";
+ 
+
+  
+  
+  </script>

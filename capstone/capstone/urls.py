@@ -33,6 +33,7 @@ urlpatterns =[
     path('dashboard/',views.dashboard,name="dashboard"),
 
 path('book_slot/',views.book_slot,name="book_slot"),
+    path('your_django_endpoint', views.your_django_endpoint, name='your_django_endpoint'),
 
 
 ]
