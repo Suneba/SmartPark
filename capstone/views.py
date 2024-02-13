@@ -41,6 +41,8 @@ def postsign(request):
 
   email = str(request.POST.get('email'))
   passw = request.POST.get('pass')
+  credit = request.POST.get('credit')
+
 
   try:
     user = authe.sign_in_with_email_and_password(email, passw)
@@ -53,10 +55,11 @@ def postsign(request):
   request.session['uid'] = session_id
   local, at, domain = email.rpartition('@')
 
-  count = 0
-  for i in str(database.child(f"parking_spots").get().val()):
-    if i == "(":
-      count = count + 1
+  count = 4
+  # for i in str(database.child(f"parking_spots").get().val()):
+  #   if i == "(":
+  #     count = count + 1
+  # print("99999999999999999999999999999999999999999999999999999999",count)
 
   parking_spot_names =[]
   latitude_list = []
@@ -66,11 +69,18 @@ def postsign(request):
   dict_for_pk_spots ={}
   for i in range(0, count-1):
     name = (database.child(f"parking_spots/parking_{i+1}/details/name").get().val())
+
     lat = (database.child(f"parking_spots/parking_{i+1}/details/lat").get().val())
     lon = (database.child(f"parking_spots/parking_{i+1}/details/lon").get().val())
-    spot = str(database.child(f"spot_color").get().val())
+    # spot = str(database.child(f"spot_color").get().val())
 
     credit = (database.child(f"users/{session_id}/details/credit").get().val())
+
+
+
+
+
+
 
 
     dict_for_pk_spots[i] = [name]
@@ -82,7 +92,7 @@ def postsign(request):
 
 
 
-  return render(request, "project/dashboard/index.html",{"credit":credit,"session_id":session_id,"name":local,"email":email,"parking_spot_name":dict_for_pk_spots,"lat":latitude_list,"lon":longitude_list,"number":count-1,"spot":spot,})
+  return render(request, "project/dashboard/index.html",{"credit":credit,"session_id":session_id,"name":local,"email":email,"parking_spot_name":dict_for_pk_spots,"lat":latitude_list,"lon":longitude_list,"number":count-1,})
 
 
 
@@ -91,11 +101,12 @@ def postsignup(request):
   name = request.POST.get('name')
   email = request.POST.get('email')
   passw = request.POST.get('pass')
+  credit = 0
 
   user = authe.create_user_with_email_and_password(email,passw)
 
   uid = user['localId']
-  data={"name":name, "email":email,}
+  data={"name":name, "email":email,"credit":credit,}
   database.child("users").child(uid).child("details").set(data)
   return render(request,"project/LOGIN/index.html")
 
@@ -142,10 +153,3 @@ def your_django_endpoint(request):
 
         response_data = {"order_id": payment['id']}
         return JsonResponse(response_data)
-
-
-
-
-
-
-
